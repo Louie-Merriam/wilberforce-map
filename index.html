@@ -169,7 +169,7 @@
         maxZoom: 28
       }).addTo(map);
 
-      // Image overlays
+      // Image overlay: inlaymap (always on)
       map.createPane('pane_inlaymap_modified_modified_1');
       map.getPane('pane_inlaymap_modified_modified_1').style.zIndex = 401;
       L.imageOverlay('data/inlaymap_modified_modified_1.png',
@@ -178,59 +178,27 @@
         { pane: 'pane_inlaymap_modified_modified_1' }
       ).addTo(map);
 
-      map.createPane('pane_Screenshot20250716at40618PM_modified_2');
-      map.getPane('pane_Screenshot20250716at40618PM_modified_2').style.zIndex = 402;
-      L.imageOverlay('data/Screenshot20250716at40618PM_modified_2.png',
+      // Image overlay: Beatty & Hawkins’ Addition (toggleable)
+      map.createPane('pane_beatty');
+      map.getPane('pane_beatty').style.zIndex = 402;
+      var overlayBeatty = L.imageOverlay('data/Screenshot20250716at40618PM_modified_2.png',
         [[38.914812692092205, -77.07810041668442],
          [38.92571674674641, -77.06702156631045]],
-        { pane: 'pane_Screenshot20250716at40618PM_modified_2' }
-      ).addTo(map);
+        { pane: 'pane_beatty' }
+      );
+      // Note: not added to map by default
 
-      map.createPane('pane_inlaymap_modified_modified_3');
-      map.getPane('pane_inlaymap_modified_modified_3').style.zIndex = 403;
-      L.imageOverlay('data/inlaymap_modified_modified_3.png',
-        [[38.91420742847421, -77.07979010938978],
-         [38.92745185706578, -77.06648989592264]],
-        { pane: 'pane_inlaymap_modified_modified_3' }
-      ).addTo(map);
+      // Add layer control for the historic overlay
+      var overlays = {
+        "Beatty and Hawkins’ Addition to Georgetown": overlayBeatty
+      };
+      L.control.layers(null, overlays, { collapsed: false }).addTo(map);
 
-      // Vector layer W_4
-      function pop_W_4(feature, layer) {
-        var popupContent = '<table>' +
-          '<tr><td colspan="2">' + (feature.properties['fid']  !== null ? autolinker.link(String(feature.properties['fid'])) : '') + '</td></tr>' +
-          '<tr><td colspan="2">' + (feature.properties['Name'] !== null ? autolinker.link(String(feature.properties['Name'])) : '') + '</td></tr>' +
-          '<tr><td colspan="2">' + (feature.properties['Info'] !== null ? autolinker.link(String(feature.properties['Info'])) : '') + '</td></tr>' +
-          '<tr><td colspan="2">' + (feature.properties['Dates'] !== null ? autolinker.link(String(feature.properties['Dates'])) : '') + '</td></tr>' +
-          '<tr><td colspan="2">' + (feature.properties['Address'] !== null ? autolinker.link(String(feature.properties['Address'])) : '') + '</td></tr>' +
-        '</table>';
-        var content = removeEmptyRowsFromPopupContent(popupContent, feature);
-        layer.on('popupopen', function(e) { addClassToPopupIfMedia(content, e.popup); });
-        layer.bindPopup(content, { maxHeight: 400 });
-      }
-      function style_W_4_0(feature) {
-        return {
-          pane: 'pane_W_4',
-          radius: 4.0,
-          opacity: 1,
-          color: 'rgba(35,35,35,1.0)',
-          weight: 1,
-          fill: true,
-          fillOpacity: 1,
-          fillColor: 'rgba(133,182,111,1.0)',
-          interactive: true
-        };
-      }
-      map.createPane('pane_W_4');
-      map.getPane('pane_W_4').style.zIndex = 404;
-      L.geoJson(json_W_4, {
-        pane: 'pane_W_4',
-        onEachFeature: pop_W_4,
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, style_W_4_0(feature));
-        }
-      }).addTo(map);
+      // You can continue adding other image overlays or vector layers here...
+      // E.g., inlaymap_modified_modified_3, W_4, etc.
     </script>
 
   </body>
 </html>
+
 
