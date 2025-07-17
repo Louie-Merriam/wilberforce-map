@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <!-- Updated viewport for mobile friendliness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -22,17 +23,18 @@
         height: 100%;
         font-family: sans-serif;
       }
+      /* COVER SCREEN */
       #cover {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100vh;
+        top: 0; right: 0; bottom: 0; left: 0;
         background: #ffffff;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 2rem;
+        padding: 1.5rem;
+        overflow-y: auto;
         z-index: 1000;
         transition: opacity 0.5s ease;
       }
@@ -41,12 +43,12 @@
         pointer-events: none;
       }
       #cover h1 {
-        font-size: 3rem;
+        font-size: 2.5rem;
         margin-bottom: 1rem;
       }
       #cover p {
-        max-width: 600px;
-        margin-bottom: 1.5rem;
+        max-width: 90%;
+        margin-bottom: 1rem;
         line-height: 1.4;
         color: #333;
       }
@@ -55,16 +57,18 @@
         font-size: 1rem;
         border: none;
         background-color: #4a90e2;
-        color: white;
+        color: #fff;
         border-radius: 0.25rem;
         cursor: pointer;
       }
       #cover button:hover {
         background-color: #3a78c2;
       }
+
+      /* FULLSCREEN MAP */
       #map {
         width: 100%;
-        height: 100vh;
+        height: 100%;
       }
     </style>
 
@@ -76,7 +80,7 @@
     <div id="cover">
       <h1>Wilberforce</h1>
       <p>
-        Throughout the early 1800s, the Wilberforce neighborhood in what is now Glover Park thrived as a multiracial community, including many freed African Americans and German Americans. The neighborhood was created by Reverend Stephen Bloomer Balch, who named the neighborhood after the abolitionist William Wilberforce. While Balch supported the American Colonization Society and the Back-To-Africa movement, the name choice reflects the diverse nature of the neighborhood. Though largely forgotten today, the story of Wilberforce is a powerful testament to the history of diverse communities in Washington DC. The goal of this project is to map the stories of the early inhabitants of Wilberforce.
+        Throughout the early 1800s, the Wilberforce neighborhood in what is now Glover Park thrived as a multiracial community, including many freed African Americans and German Americans. The neighborhood was created by Reverend Stephen Bloomer Balch, who named the neighborhood after the abolitionist William Wilberforce. While Balch supported the American Colonization Society and the Back-To-Africa movement, the name choice reflects the diverse nature of the neighborhood. Though largely forgotten today, the story of Wilberforce is a powerful testament to the history of diverse communities in Washington DC.
       </p>
       <p><em>With special thanks to Carlton Fletcher for his extensive research.</em></p>
       <button id="enterMap">Enter Map</button>
@@ -102,7 +106,7 @@
     <script src="data/W_4.js"></script>
 
     <script>
-      // Fade out cover
+      // Fade cover away on Enter
       document.getElementById('enterMap').addEventListener('click', function() {
         const cover = document.getElementById('cover');
         cover.classList.add('hidden');
@@ -133,13 +137,13 @@
         var tempDiv = document.createElement('div');
         tempDiv.innerHTML = content;
         var rows = tempDiv.querySelectorAll('tr');
-        for (var i = 0; i < rows.length; i++) {
-          var td = rows[i].querySelector('td.visible-with-data');
+        rows.forEach(function(row) {
+          var td = row.querySelector('td.visible-with-data');
           var key = td ? td.id : '';
           if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
-            rows[i].parentNode.removeChild(rows[i]);
+            row.remove();
           }
-        }
+        });
         return tempDiv.innerHTML;
       }
       function addClassToPopupIfMedia(content, popup) {
@@ -147,7 +151,7 @@
         tempDiv.innerHTML = content;
         if (tempDiv.querySelector('td img')) {
           popup._contentNode.classList.add('media');
-          setTimeout(function() { popup.update(); }, 10);
+          setTimeout(() => popup.update(), 10);
         } else {
           popup._contentNode.classList.remove('media');
         }
@@ -178,7 +182,7 @@
       map.getPane('pane_Screenshot20250716at40618PM_modified_2').style.zIndex = 402;
       L.imageOverlay('data/Screenshot20250716at40618PM_modified_2.png',
         [[38.914812692092205, -77.07810041668442],
-         [38.92571674674641, -77.06702156602822]],
+         [38.92571674674641, -77.06702156631045]],
         { pane: 'pane_Screenshot20250716at40618PM_modified_2' }
       ).addTo(map);
 
@@ -198,7 +202,7 @@
           '<tr><td colspan="2">' + (feature.properties['Info'] !== null ? autolinker.link(String(feature.properties['Info'])) : '') + '</td></tr>' +
           '<tr><td colspan="2">' + (feature.properties['Dates'] !== null ? autolinker.link(String(feature.properties['Dates'])) : '') + '</td></tr>' +
           '<tr><td colspan="2">' + (feature.properties['Address'] !== null ? autolinker.link(String(feature.properties['Address'])) : '') + '</td></tr>' +
-          '</table>';
+        '</table>';
         var content = removeEmptyRowsFromPopupContent(popupContent, feature);
         layer.on('popupopen', function(e) { addClassToPopupIfMedia(content, e.popup); });
         layer.bindPopup(content, { maxHeight: 400 });
