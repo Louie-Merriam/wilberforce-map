@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://louie-merriam.github.io/wilberforce-map/sitemap.xml
